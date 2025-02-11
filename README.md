@@ -1,6 +1,6 @@
 # 🎬 LexAI
 
-LexAI is an intelligent YouTube video summarizer that transforms lengthy videos into concise, insightful summaries within seconds. Powered by LLama3 and built with ❤️ using Streamlit, LexAI helps you grasp key points quickly and even allows you to ask specific questions about the video content.
+LexAI is an intelligent YouTube video summarizer that transforms lengthy videos into concise, insightful summaries within seconds. Powered by Groq and visually represented to you using Streamlit, LexAI helps you grasp key points quickly and even allows you to ask specific questions about the video content.
 
 ## 🚀 Features
 
@@ -14,7 +14,7 @@ LexAI is an intelligent YouTube video summarizer that transforms lengthy videos 
 
 - **Frontend:** Streamlit
 - **Backend:** Python (Groq API, YouTube Transcript API)
-- **AI Model:** LLama3
+- **AI Model:** LLama3-70b and LLama3-8b
 - **Other Libraries:**
   - `aiohttp` for asynchronous HTTP requests
   - `dotenv` for environment variable management
