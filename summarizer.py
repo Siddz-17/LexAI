@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-Aroq = Groq(api_key=os.getenv("GROQ_API_KEY"))
+Aroq = Groq(api_key='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')
 client = Groq(api_key=Aroq)
 
 def summarize_transcript(text: str) -> str:
