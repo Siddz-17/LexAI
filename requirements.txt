@@ -1,8 +1,5 @@
-fastapi
-    uvicorn
-    python-multipart
-    youtube-transcript-api
-    aiohttp
-    pydantic
-    groq
-    python-dotenv
+streamlit
+youtube-transcript-api
+aiohttp
+groq
+python-dotenv

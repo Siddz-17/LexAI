@@ -1,13 +1,12 @@
 import streamlit as st
-import requests
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv # load_dotenv is called in summarizer.py
 import asyncio
 from typing import AsyncGenerator
+from youtube import get_video_info, get_video_transcript
+from summarizer import summarize_transcript, answer_question
 
-load_dotenv()
-
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+# load_dotenv() # No longer needed here as summarizer.py handles it.
 
 st.set_page_config(
     page_title="YouTube Summarizer",
@@ -75,62 +74,62 @@ if video_url:
             # Clear summary if video URL changes
             st.session_state.pop("summary", None)
             try:
-                response = requests.post(f"{API_URL}/api/video-info", json={"url": video_url})
-                response.raise_for_status()
-                video_info = response.json()
-                st.session_state["video_info"] = video_info
+                video_info_data = asyncio.run(get_video_info(video_url))
+                st.session_state["video_info"] = video_info_data
                 st.session_state["video_url"] = video_url
-            except requests.exceptions.RequestException as e:
+            except ValueError as e:
                 st.error(f"Error fetching video info: {e}")
-        
+            except Exception as e:
+                st.error(f"An unexpected error occurred: {e}")
+
         if "video_info" in st.session_state and st.session_state.get("video_url") == video_url:
             st.subheader("Video Information")
             st.image(st.session_state["video_info"]["thumbnail"], width=300)
             st.write(f"**Title:** {st.session_state['video_info']['title']}")
 
     with col2:
-        if "summary" not in st.session_state:
-            # Summary placeholder for typing effect
-            summary_placeholder = st.empty()
-            if st.button("Summarize Video"):
-                try:
-                    response = requests.post(f"{API_URL}/api/summarize", json={"url": video_url})
-                    response.raise_for_status()
-                    summary = response.json()["summary"]
+        if "video_info" in st.session_state and st.session_state.get("video_url") == video_url: # Ensure video_info is loaded
+            if "summary" not in st.session_state:
+                # Summary placeholder for typing effect
+                summary_placeholder = st.empty()
+                if st.button("Summarize Video"):
+                    try:
+                        transcript_text = asyncio.run(get_video_transcript(video_url))
+                        summary_text = summarize_transcript(transcript_text)
 
-                    async def type_summary(text: str) -> AsyncGenerator[str, None]:
-                        step_size = 5  # Number of characters added at once
-                        for i in range(step_size, len(text) + 1, step_size):
-                            yield text[:i]
-                            await asyncio.sleep(0.005)  # Reduced delay for faster typing
-                        
-                    async def display_summary():
-                        summary_placeholder.empty()  # Clear previous content
-                        typing_text = ""
-                        async for partial_summary in type_summary(summary):
-                            typing_text = partial_summary
-                            summary_placeholder.markdown(typing_text)
-                        # Store the complete summary in session_state
-                        st.session_state["summary"] = typing_text
-                    
-                    asyncio.run(display_summary())
-                except requests.exceptions.RequestException as e:
-                    st.error(f"Error summarizing video: {e}")
-        else:
-            # Display the stored summary without typing effect
-            st.subheader("Video Summary")
-            st.markdown(st.session_state["summary"])
+                        async def type_summary(text: str) -> AsyncGenerator[str, None]:
+                            step_size = 5  # Number of characters added at once
+                            for i in range(step_size, len(text) + 1, step_size):
+                                yield text[:i]
+                                await asyncio.sleep(0.005)  # Reduced delay for faster typing
+
+                        async def display_summary():
+                            summary_placeholder.empty()  # Clear previous content
+                            typing_text = ""
+                            async for partial_summary in type_summary(summary_text):
+                                typing_text = partial_summary
+                                summary_placeholder.markdown(typing_text)
+                            # Store the complete summary in session_state
+                            st.session_state["summary"] = typing_text
+
+                        asyncio.run(display_summary())
+                    except ValueError as e:
+                        st.error(f"Error summarizing video: {e}")
+                    except Exception as e:
+                        st.error(f"An unexpected error occurred during summarization: {e}")
+            else:
+                # Display the stored summary without typing effect
+                st.subheader("Video Summary")
+                st.markdown(st.session_state["summary"])
 
     # Ask a question section
     if "summary" in st.session_state:
         question = st.text_input("Ask a question about the summary:")
         if question:
             try:
-                response = requests.post(f"{API_URL}/api/answer", json={"summary": st.session_state["summary"], "question": question})
-                response.raise_for_status()
-                answer = response.json()["answer"]
-                st.write(f"**Answer:** {answer}")
-            except requests.exceptions.RequestException as e:
+                answer_text = answer_question(st.session_state["summary"], question)
+                st.write(f"**Answer:** {answer_text}")
+            except Exception as e: # Catching generic exception as answer_question might have various issues
                 st.error(f"Error answering question: {e}")
 
 # Footer

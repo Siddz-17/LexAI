@@ -13,11 +13,14 @@ LexAI is an intelligent YouTube video summarizer that transforms lengthy videos 
 ## 🛠️ Tech Stack
 
 - **Frontend:** Streamlit
-- **Backend:** Python (Groq API, YouTube Transcript API)
-- **AI Model:** LLama3-70b and LLama3-8b
-- **Other Libraries:**
-  - `aiohttp` for asynchronous HTTP requests
-  - `dotenv` for environment variable management
+- **Backend Services/APIs Consumed:** Python (Groq API, YouTube Transcript API)
+- **AI Model:** LLama3-70b and LLama3-8b (via Groq API)
+- **Key Python Libraries:**
+  - `streamlit` for the application interface
+  - `youtube-transcript-api` for fetching video transcripts
+  - `aiohttp` for asynchronous operations (used by `youtube-transcript-api`)
+  - `groq` for interacting with the Groq API
+  - `python-dotenv` for local environment variable management
 
 ## ⚙️ Installation
 
@@ -38,33 +41,48 @@ LexAI is an intelligent YouTube video summarizer that transforms lengthy videos 
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables:**
-   Create a `.env` file in the project root:
+4. **Configure environment variables (for local execution):**
+   Create a `.env` file in the project root with your Groq API key:
    ```env
-   API_URL=http://localhost:8000
    GROQ_API_KEY=your_groq_api_key_here
    ```
+   (The application loads this key using `python-dotenv`.)
 
-5. **Run the app:**
+5. **Run the Streamlit app:**
    ```bash
    streamlit run app.py
    ```
 
 ## 🌐 Usage
 
-1. Enter the YouTube video URL in the input field.
-2. Click **"Summarize Video"** to generate the summary.
-3. View the video title, thumbnail, and dynamic summary.
-4. Ask specific questions about the summary for detailed answers.
+1. Ensure you have followed the installation steps and the app is running.
+2. Open your web browser and navigate to the local Streamlit URL (usually `http://localhost:8501`).
+3. Enter the YouTube video URL in the input field.
+4. Click **"Summarize Video"** to generate the summary.
+5. View the video title, thumbnail, and dynamic summary.
+6. Ask specific questions about the summary for detailed answers.
 
-## 📦 API Endpoints
+## 🚀 Deploying to Streamlit Community Cloud
 
-- `POST /api/video-info`: Fetch video details (title, thumbnail).
-- `POST /api/summarize`: Generate summary from video transcript.
-- `POST /api/answer`: Answer questions based on the summary.
+This application is ready to be deployed using Streamlit Community Cloud!
+
+1.  **Prerequisites:**
+    *   Ensure your code is pushed to a GitHub repository.
+    *   You will need your `GROQ_API_KEY`.
+
+2.  **Deployment Steps:**
+    *   Go to [share.streamlit.io](https://share.streamlit.io/).
+    *   Click "Deploy an app".
+    *   Connect your GitHub account and select the repository and branch for this application.
+    *   The main application file is `app.py` and the `requirements.txt` is already configured.
+    *   **Important:** Before deploying, go to the "Advanced settings..." section and add your `GROQ_API_KEY` to the "Secrets" manager. The key name should be `GROQ_API_KEY` and the value should be your actual API key. This is how Streamlit Cloud securely manages your API key.
+    *   Click "Deploy!".
+
+Your app should now be live. For more detailed instructions, refer to the [official Streamlit deployment guide](https://docs.streamlit.io/sharing-your-app/deploy-your-app).
 
 ## 🤖 AI Models
 
+The application utilizes the following models via the Groq API:
 - **LLama3-70B:** Used for detailed summarization.
 - **LLama3-8B:** Optimized for answering questions quickly.
 
@@ -84,11 +102,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 💬 Acknowledgements
 
-- **LLama3** for powerful AI capabilities.
-- **Streamlit** for the easy-to-use web framework.
+- **Groq** for providing access to powerful AI models like LLama3.
+- **Streamlit** for the easy-to-use web application framework.
 - **YouTube Transcript API** for seamless transcript extraction.
 
 ---
 
-Built with ❤️ by [Your Name](https://github.com/your-username).
-
+Built with ❤️. (You can add your name/GitHub profile here if you wish)
