@@ -23,7 +23,7 @@ LexAI is an intelligent YouTube video summarizer that transforms lengthy videos 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/lexai.git
+   git clone https://github.com/siddz-17/lexai.git
    cd lexai
    ```
 
